@@ -27,8 +27,11 @@ end
 ---@return table
 local function handlers(adapter)
   local model_opts = resolve_model_opts(adapter)
+  local current_url = adapter.url or "https://api.githubcopilot.com/chat/completions"
+  local base_url = current_url:gsub("/chat/completions$", ""):gsub("/responses$", "")
+
   if model_opts.endpoint == "responses" then
-    adapter.url = "https://api.githubcopilot.com/responses"
+    adapter.url = base_url .. "/responses"
 
     local responses = require("codecompanion.adapters.http.openai_responses")
 
@@ -67,7 +70,7 @@ local function handlers(adapter)
     return responses.handlers
   end
 
-  adapter.url = "https://api.githubcopilot.com/chat/completions"
+  adapter.url = base_url .. "/chat/completions"
   return require("codecompanion.adapters.http.openai").handlers
 end
 
